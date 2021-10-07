@@ -14,16 +14,17 @@ public class GUI1024Panel2 extends JPanel {
     private JLabel[][] gameBoardUI;
     private NumberGameArrayList gameLogic;
 
-    public GUI1024Panel2() {
+    public GUI1024Panel2(int rows, int cols, int winningValue) {
         gameLogic = new NumberGameArrayList();
-        gameLogic.resizeBoard(4, 4, 16);
+        gameLogic.resizeBoard(rows, cols, winningValue);
 
         setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-        setLayout(new GridLayout(4, 4));
+        setLayout(new GridLayout(rows, cols));
 
-        gameBoardUI = new JLabel[4][4];
+        gameBoardUI = new JLabel[rows][cols];
 
         Font myTextFont = new Font(Font.SERIF, Font.BOLD, 40);
+
         for (int k = 0; k < gameBoardUI.length; k++)
             for (int m = 0; m < gameBoardUI[k].length; m++) {
                 gameBoardUI[k][m] = new JLabel();
@@ -63,19 +64,18 @@ public class GUI1024Panel2 extends JPanel {
 
         @Override
         public void keyPressed(KeyEvent e) {
-
             boolean moved = false;
             switch (e.getKeyCode()) {
-                case KeyEvent.VK_UP:
+                case KeyEvent.VK_COMMA:
                     moved = gameLogic.slide(SlideDirection.UP);
                     break;
-                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_A:
                     moved = gameLogic.slide(SlideDirection.LEFT);
                     break;
-                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_O:
                     moved = gameLogic.slide(SlideDirection.DOWN);
                     break;
-                case KeyEvent.VK_RIGHT:
+                case KeyEvent.VK_E:
                     moved = gameLogic.slide(SlideDirection.RIGHT);
                     break;
                 case KeyEvent.VK_U:

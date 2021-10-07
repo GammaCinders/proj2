@@ -1,7 +1,7 @@
 package proj2;
 
 public class Cell implements Comparable<Cell> {
-    private int row, column, value;
+    protected int row, column, value;
 
 
     public Cell()

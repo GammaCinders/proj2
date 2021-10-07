@@ -151,6 +151,14 @@ public class GUI1024Panel extends JPanel {
         c.gridx = 0;
         c.gridy = 0;
 
+
+        //TODO temp test
+        int[][] tempTest = {{0, 0, 0},
+                            {0, 0, 0},
+                            {0, 0, 1}};
+        gameLogic.setValues(tempTest);
+
+
         // Initialize the game board GUI
         gameBoardUI = new JLabel[nRows][nCols];
 
