@@ -54,15 +54,15 @@ public class NumberGameArrayList implements NumberSlider {
     public Cell placeRandomValue() {
 
         Cell newRandCell = new Cell();
-        newRandCell.setColumn((int)(Math.random()*(this.columns-1)));
-        newRandCell.setRow((int)(Math.random()*(this.rows-1)));
+        newRandCell.setColumn((int)(Math.random()*(this.columns)));
+        newRandCell.setRow((int)(Math.random()*(this.rows)));
         //TODO add some random number (2 or 4) to this
         newRandCell.setValue(2);
 
         //TODO this won't work later for when have to check if entire board is full
         while(grid[newRandCell.getRow()][newRandCell.getColumn()] != 0) {
-            newRandCell.setColumn((int)(Math.random()*(this.columns-1)));
-            newRandCell.setRow((int)(Math.random()*(this.rows-1)));
+            newRandCell.setColumn((int)(Math.random()*(this.columns)));
+            newRandCell.setRow((int)(Math.random()*(this.rows)));
         }
 
         this.grid[newRandCell.getRow()][newRandCell.getColumn()] = newRandCell.getValue();
@@ -89,9 +89,9 @@ public class NumberGameArrayList implements NumberSlider {
 
                     //Saves all the cells in the current row to a new ArrayList
                     ArrayList<Cell> cellsInRow = new ArrayList<>();
-                    for(Cell columnCell : lastSave) {
-                        if(columnCell.getRow() == row) {
-                            cellsInRow.add(new Cell(row, columnCell.getColumn(), columnCell.getValue()));
+                    for(int col=0; col<grid[row].length; col++) {
+                        if(grid[row][col] != 0) {
+                            cellsInRow.add(new Cell(row, col, grid[row][col]));
                         }
                     }
 
@@ -100,7 +100,7 @@ public class NumberGameArrayList implements NumberSlider {
                     while(!doneMerging) {
                         doneMerging = true;
 
-                        //goes right to left for merging, goes to 1 because that catches 0
+                        //goes right to left for merging, goes to 1 because that checks 0
                         for(int i=cellsInRow.size()-1; i>0; i--) {
                             if(cellsInRow.get(i).getValue() == cellsInRow.get(i-1).getValue()) {
                                 cellsInRow.remove(i);
@@ -113,6 +113,8 @@ public class NumberGameArrayList implements NumberSlider {
                     //Wipes the row and adds the new shifted row back in
                     wipeRow(row);
                     for(int i=0; i<cellsInRow.size(); i++) {
+                        //TODO this code could be better, the ArrayList should never be bigger than
+                        //TODO the grid row length, but if it is it will throw an error (IOB)
                         grid[row][grid[row].length-i-1] = cellsInRow.get(cellsInRow.size()-i-1).getValue();
                     }
                 }
@@ -124,9 +126,9 @@ public class NumberGameArrayList implements NumberSlider {
 
                     //Saves all the cells in the current row to a new ArrayList
                     ArrayList<Cell> cellsInRow = new ArrayList<>();
-                    for(Cell columnCell : lastSave) {
-                        if(columnCell.getRow() == row) {
-                            cellsInRow.add(new Cell(row, columnCell.getColumn(), columnCell.getValue()));
+                    for(int col=0; col<grid[row].length; col++) {
+                        if(grid[row][col] != 0) {
+                            cellsInRow.add(new Cell(row, col, grid[row][col]));
                         }
                     }
 
@@ -135,23 +137,24 @@ public class NumberGameArrayList implements NumberSlider {
                     while(!doneMerging) {
                         doneMerging = true;
 
-                        //goes left to right for merging, goes to size-1 because 2nd to last catches last
+                        //goes left to right for merging, goes to size-1 because 2nd to last catches
                         //also only do this if there is stuff in the row
                         if(cellsInRow.size() > 1) {
                             for(int i=0; i<(cellsInRow.size()-1); i++) {
                                 if(cellsInRow.get(i).getValue() == cellsInRow.get(i+1).getValue()) {
-                                    cellsInRow.remove(i);
-                                    cellsInRow.get(i+1).setValue(cellsInRow.get(i+1).getValue()*2);
+                                    cellsInRow.remove(i+1);
+                                    cellsInRow.get(i).setValue(cellsInRow.get(i).getValue()*2);
+                                    i--;
+                                    doneMerging = false;
                                 }
-                                doneMerging = false;
                             }
                         }
                     }
 
                     //Wipes the row and adds the new shifted row back in
                     wipeRow(row);
-                    for(int i=0; i<cellsInRow.size(); i++) {
-                        grid[row][i] = cellsInRow.get(i).getValue();
+                    for(int col=0; col<cellsInRow.size(); col++) {
+                        grid[row][col] = cellsInRow.get(col).getValue();
                     }
                 }
             }
