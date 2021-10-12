@@ -83,6 +83,21 @@ public class NumberGameArrayList implements NumberSlider {
         if(canSlide) {
             saveBoard();
 
+            //TODO work in progress for saving some code on right/left, and up/odwn
+//            if(dir == SlideDirection.LEFT || dir == SlideDirection.RIGHT) {
+//
+//                //Go through each row because thats how blocks
+//                //are slide and merged when lief or right
+//                for(int row=0; row < grid.length; row++) {
+//                    ArrayList<Cell> cellsInRow = new ArrayList<>();
+//                    for(int col=0; col<grid[row].length; col++) {
+//                        if(grid[row][col] != 0) {
+//                            cellsInRow.add(new Cell(row, col, grid[row][col]));
+//                        }
+//                    }
+//                }
+//            }
+
             if(dir == SlideDirection.RIGHT) {
                 //Increment through and slide each row to the right
                 for(int row=0; row<grid.length; row++) {
