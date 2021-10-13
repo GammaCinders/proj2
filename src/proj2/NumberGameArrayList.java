@@ -75,104 +75,79 @@ public class NumberGameArrayList implements NumberSlider {
         boolean canSlide = false;
 
 
-
-        //TODO remave later for an actual check
+        //TODO remove later for an actual check
         //TODO actually just check after if lastSave == current board after mutation
         canSlide = true;
 
         if(canSlide) {
             saveBoard();
 
-            //TODO work in progress for saving some code on right/left, and up/odwn
-//            if(dir == SlideDirection.LEFT || dir == SlideDirection.RIGHT) {
-//
-//                //Go through each row because thats how blocks
-//                //are slide and merged when lief or right
-//                for(int row=0; row < grid.length; row++) {
-//                    ArrayList<Cell> cellsInRow = new ArrayList<>();
-//                    for(int col=0; col<grid[row].length; col++) {
-//                        if(grid[row][col] != 0) {
-//                            cellsInRow.add(new Cell(row, col, grid[row][col]));
-//                        }
-//                    }
-//                }
-//            }
-
             if(dir == SlideDirection.RIGHT) {
-                //Increment through and slide each row to the right
                 for(int row=0; row<grid.length; row++) {
-
-                    //Saves all the cells in the current row to a new ArrayList
-                    ArrayList<Cell> cellsInRow = new ArrayList<>();
-                    for(int col=0; col<grid[row].length; col++) {
-                        if(grid[row][col] != 0) {
-                            cellsInRow.add(new Cell(row, col, grid[row][col]));
-                        }
-                    }
-
-                    //This next part merges each cell as much as possible
-                    boolean doneMerging = false;
-                    while(!doneMerging) {
-                        doneMerging = true;
-
-                        //goes right to left for merging, goes to 1 because that checks 0
-                        for(int i=cellsInRow.size()-1; i>0; i--) {
-                            if(cellsInRow.get(i).getValue() == cellsInRow.get(i-1).getValue()) {
-                                cellsInRow.remove(i);
-                                cellsInRow.get(i-1).setValue(cellsInRow.get(i-1).getValue()*2);
-                                doneMerging = false;
-                            }
-                        }
-                    }
+                    ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
+                    mergeCells(cellsInRow, SlideDirection.RIGHT);
 
                     //Wipes the row and adds the new shifted row back in
                     wipeRow(row);
+
+                    //TODO Need more checks here
                     for(int i=0; i<cellsInRow.size(); i++) {
                         //TODO this code could be better, the ArrayList should never be bigger than
                         //TODO the grid row length, but if it is it will throw an error (IOB)
                         grid[row][grid[row].length-i-1] = cellsInRow.get(cellsInRow.size()-i-1).getValue();
                     }
                 }
-            }
-
-            if(dir == SlideDirection.LEFT) {
-                //Increment through and slide each row to the left
+            } else if(dir == SlideDirection.LEFT) {
                 for(int row=0; row<grid.length; row++) {
+                    ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
+                    mergeCells(cellsInRow, SlideDirection.LEFT);
 
-                    //Saves all the cells in the current row to a new ArrayList
-                    ArrayList<Cell> cellsInRow = new ArrayList<>();
-                    for(int col=0; col<grid[row].length; col++) {
-                        if(grid[row][col] != 0) {
-                            cellsInRow.add(new Cell(row, col, grid[row][col]));
-                        }
-                    }
-
-                    //This next part merges each cell as much as possible
-                    boolean doneMerging = false;
-                    while(!doneMerging) {
-                        doneMerging = true;
-
-                        //goes left to right for merging, goes to size-1 because 2nd to last catches
-                        //also only do this if there is stuff in the row
-                        if(cellsInRow.size() > 1) {
-                            for(int i=0; i<(cellsInRow.size()-1); i++) {
-                                if(cellsInRow.get(i).getValue() == cellsInRow.get(i+1).getValue()) {
-                                    cellsInRow.remove(i+1);
-                                    cellsInRow.get(i).setValue(cellsInRow.get(i).getValue()*2);
-                                    i--;
-                                    doneMerging = false;
-                                }
-                            }
-                        }
-                    }
-
-                    //Wipes the row and adds the new shifted row back in
+                    //Wipe current row before adding back merged array
                     wipeRow(row);
+
                     for(int col=0; col<cellsInRow.size(); col++) {
-                        grid[row][col] = cellsInRow.get(col).getValue();
+                       grid[row][col] = cellsInRow.get(col).getValue();
+                    }
+                }
+            } else if(dir == SlideDirection.UP) {
+                for(int col=0; col<grid[0].length; col++) {
+                    ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
+                    mergeCells(cellsInCol, SlideDirection.UP);
+
+                    //Wipe column before adding back merged array
+                    wipeCol(col);
+
+                    for(int row=0; row<cellsInCol.size(); row++) {
+                        grid[row][col] = cellsInCol.get(row).getValue();
+                    }
+                }
+            } else if(dir == SlideDirection.DOWN) {
+                for(int col=0; col<grid[0].length; col++) {
+                    ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
+                    mergeCells(cellsInCol, SlideDirection.DOWN);
+
+                    //wipe this shit m8
+                    wipeCol(col);
+
+                    for(int i=0; i<cellsInCol.size(); i++) {
+                        grid[grid.length-i-1][col] = cellsInCol.get(cellsInCol.size()-i-1).getValue();
                     }
                 }
             }
+
+
+                    //Wipes the row and adds the new shifted row back in
+//                    wipeRow(row);
+//                    for(int i=0; i<cellsInRow.size(); i++) {
+//                        //TODO this code could be better, the ArrayList should never be bigger than
+//                        //TODO the grid row length, but if it is it will throw an error (IOB)
+//                        grid[row][grid[row].length-i-1] = cellsInRow.get(cellsInRow.size()-i-1).getValue();
+
+                    //Wipes the row and adds the new shifted row back in
+//                    wipeRow(row);
+//                    for(int col=0; col<cellsInRow.size(); col++) {
+//                        grid[row][col] = cellsInRow.get(col).getValue();
+//                    }
 
 
             placeRandomValue();
@@ -229,15 +204,67 @@ public class NumberGameArrayList implements NumberSlider {
         }
     }
 
+    //TODO check for invalids later
+    private ArrayList<Cell> convertGridRowToCellArrayList(int row) {
+        ArrayList<Cell> cellsInRow = new ArrayList<>();
+        for(int col=0; col<grid[row].length; col++) {
+            if(grid[row][col] != 0) {
+                cellsInRow.add(new Cell(row, col, grid[row][col]));
+            }
+        }
+
+        return cellsInRow;
+    }
+
+    //TODO check for invalids later
+    private ArrayList<Cell> convertGridColToCellArrayList(int col) {
+        ArrayList<Cell> cellsInRow = new ArrayList<>();
+        for(int row=0; row<grid.length; row++) {
+            if(grid[row][col] != 0) {
+                cellsInRow.add(new Cell(row, col, grid[row][col]));
+            }
+        }
+
+        return cellsInRow;
+    }
+
+    //TODO again check invalids
+    //right and down are the same, left and up are the same
+    private ArrayList<Cell> mergeCells(ArrayList<Cell> cells, SlideDirection dir) {
+        if(dir == SlideDirection.RIGHT || dir == SlideDirection.DOWN) {
+            //goes right to left for merging, goes to 1 because that checks 0
+            for(int i=cells.size()-1; i>0; i--) {
+                if(cells.get(i).getValue() == cells.get(i-1).getValue()) {
+                    cells.remove(i);
+                    cells.get(i-1).setValue(cells.get(i-1).getValue()*2);
+                    //TODO this should prevent double/extra merging, but I'll see
+                    i--;
+                }
+            }
+        } else if (dir == SlideDirection.LEFT || dir == SlideDirection.UP) {
+            for(int i=0; i<cells.size()-1; i++) {
+                if(cells.get(i).getValue() == cells.get(i+1).getValue()) {
+                    cells.remove(i);
+                    cells.get(i).setValue(cells.get(i).getValue()*2);
+                }
+            }
+        }
+
+        return cells;
+    }
+
     private void wipeRow(int row) {
         //TODO check for num row too big, small, neg, etc
-        for(int i=0; i<grid[row].length; i++) {
-            grid[row][i] = 0;
+        for(int col=0; col<grid[row].length; col++) {
+            grid[row][col] = 0;
         }
     }
 
     private void wipeCol(int col) {
-
+        //TODO add invalid check
+        for(int row=0; row<grid.length; row++) {
+            grid[row][col] = 0;
+        }
     }
 
 }
