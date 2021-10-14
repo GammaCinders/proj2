@@ -71,4 +71,27 @@ public class Cell implements Comparable<Cell> {
     public void setValue(int value) {
         this.value = value;
     }
+
+    /**
+     * Returns true if the value, row and col are the same
+     * @param o Cell instance to compare to this one
+     * @return Returns true if the value, row and col are the same, false otherwise
+     */
+    @Override
+    public boolean equals(Object o) {
+        if(o == null || !(o instanceof Cell)) {
+            throw new IllegalArgumentException();
+        } else {
+            //true if value, row and col are equal
+            if(this.getValue()==((Cell) o).getValue()) {
+                if(this.getRow()==((Cell) o).getRow()) {
+                    if(this.getColumn()==((Cell) o).getColumn()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
 }

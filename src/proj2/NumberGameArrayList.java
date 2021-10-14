@@ -74,7 +74,6 @@ public class NumberGameArrayList implements NumberSlider {
     public boolean slide(SlideDirection dir) {
         boolean canSlide = false;
 
-
         //TODO remove later for an actual check
         //TODO actually just check after if lastSave == current board after mutation
         canSlide = true;
@@ -135,24 +134,12 @@ public class NumberGameArrayList implements NumberSlider {
                 }
             }
 
+            //Check for if anything changed, to see to add one randcell after or not
+            for(Cell cell : ) {
 
-                    //Wipes the row and adds the new shifted row back in
-//                    wipeRow(row);
-//                    for(int i=0; i<cellsInRow.size(); i++) {
-//                        //TODO this code could be better, the ArrayList should never be bigger than
-//                        //TODO the grid row length, but if it is it will throw an error (IOB)
-//                        grid[row][grid[row].length-i-1] = cellsInRow.get(cellsInRow.size()-i-1).getValue();
-
-                    //Wipes the row and adds the new shifted row back in
-//                    wipeRow(row);
-//                    for(int col=0; col<cellsInRow.size(); col++) {
-//                        grid[row][col] = cellsInRow.get(col).getValue();
-//                    }
-
+            }
 
             placeRandomValue();
-
-
         }
 
         return canSlide;
