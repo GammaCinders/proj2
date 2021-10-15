@@ -135,7 +135,7 @@ public class NumberGameArrayList implements NumberSlider {
             }
 
             //Check for if anything changed, to see to add one randcell after or not
-            for(Cell cell : ) {
+            for(Cell cell : lastSave) {
 
             }
 
