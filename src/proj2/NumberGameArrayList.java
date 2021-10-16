@@ -27,6 +27,9 @@ public class NumberGameArrayList implements NumberSlider {
         this.columns = width;
 
         this.grid = new int[this.rows][this.columns];
+
+        this.gameStatus = GameStatus.IN_PROGRESS;
+
         if(isPowerOf2(winningValue)) {
             this.winningValue = winningValue;
         } else {
@@ -57,6 +60,11 @@ public class NumberGameArrayList implements NumberSlider {
             }
         }
         saveBoard();
+        if(isGameLost()) {
+            gameStatus = GameStatus.USER_LOST;
+        } else {
+            this.gameStatus = GameStatus.IN_PROGRESS;
+        }
     }
 
     @Override
@@ -137,7 +145,9 @@ public class NumberGameArrayList implements NumberSlider {
             if(grid[cell.getRow()][cell.getColumn()] != cell.getValue()) {
                 placeRandomValue();
                 saveBoard();
-                //updateIfLost();
+                if(isGameLost()) {
+                    gameStatus = GameStatus.USER_LOST;
+                }
                 return true;
             }
         }
@@ -255,17 +265,29 @@ public class NumberGameArrayList implements NumberSlider {
     }
 
     //Tells if the user has lost based on the current grid
-    private void updateIfLost() {
-        NumberGameArrayList checker = new NumberGameArrayList();
-        checker.setValues(this.grid);
-        //This is so inefficient and cringe, but I
-        //really don't know how else to do this
-        if(!checker.slide(SlideDirection.UP)
-                && !checker.slide(SlideDirection.DOWN)
-                && !checker.slide(SlideDirection.LEFT)
-                && !checker.slide(SlideDirection.RIGHT)) {
-            gameStatus = GameStatus.USER_LOST;
+    //Returns true if the user lost
+    private boolean isGameLost() {
+        if(grid.length*grid[0].length == allMoves.get(allMoves.size()-1).size()) {
+            for(int row=0; row<rows; row++) {
+                ArrayList<Cell> cellRow = convertGridRowToCellArrayList(row);
+                //TODO IDK if this works
+                if(cellRow.size() != mergeCells(cellRow, SlideDirection.RIGHT).size()) {
+                    return false;
+                }
+            }
+
+            for(int col=0; col<columns; col++) {
+                ArrayList<Cell> cellRow = convertGridColToCellArrayList(col);
+                //TODO IDK if this works
+                if(cellRow.size() != mergeCells(cellRow, SlideDirection.RIGHT).size()) {
+                    return false;
+                }
+            }
+
+            return true;
         }
+
+        return false;
     }
 
     //0 returns false in this case, since that wouldn't be
