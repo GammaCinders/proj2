@@ -1,6 +1,7 @@
 package proj2;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class NumberGameArrayList implements NumberSlider {
@@ -13,10 +14,11 @@ public class NumberGameArrayList implements NumberSlider {
     private GameStatus gameStatus = GameStatus.IN_PROGRESS;
 
     //Mostly for used for undo, can save any board state to be used later
-    private ArrayList<Cell> lastSave = new ArrayList<>();
+    private ArrayList<ArrayList> allMoves = new ArrayList<>();
 
     public NumberGameArrayList() {
         resizeBoard(4, 4, 16);
+
     }
 
     public NumberGameArrayList(int rows, int columns, int winningValue) {
@@ -35,9 +37,9 @@ public class NumberGameArrayList implements NumberSlider {
     @Override
     public void reset() {
         this.grid = new int[this.rows][this.columns];
-
         placeRandomValue();
         placeRandomValue();
+        saveBoard();
     }
 
     @Override
@@ -72,77 +74,69 @@ public class NumberGameArrayList implements NumberSlider {
 
     @Override
     public boolean slide(SlideDirection dir) {
-        boolean canSlide = false;
 
-        //TODO remove later for an actual check
-        //TODO actually just check after if lastSave == current board after mutation
-        canSlide = true;
+        if(dir == SlideDirection.RIGHT) {
+            for(int row=0; row<grid.length; row++) {
+                ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
+                mergeCells(cellsInRow, SlideDirection.RIGHT);
 
-        if(canSlide) {
-            saveBoard();
+                //Wipes the row and adds the new shifted row back in
+                wipeRow(row);
 
-            if(dir == SlideDirection.RIGHT) {
-                for(int row=0; row<grid.length; row++) {
-                    ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
-                    mergeCells(cellsInRow, SlideDirection.RIGHT);
-
-                    //Wipes the row and adds the new shifted row back in
-                    wipeRow(row);
-
-                    //TODO Need more checks here
-                    for(int i=0; i<cellsInRow.size(); i++) {
-                        //TODO this code could be better, the ArrayList should never be bigger than
-                        //TODO the grid row length, but if it is it will throw an error (IOB)
-                        grid[row][grid[row].length-i-1] = cellsInRow.get(cellsInRow.size()-i-1).getValue();
-                    }
-                }
-            } else if(dir == SlideDirection.LEFT) {
-                for(int row=0; row<grid.length; row++) {
-                    ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
-                    mergeCells(cellsInRow, SlideDirection.LEFT);
-
-                    //Wipe current row before adding back merged array
-                    wipeRow(row);
-
-                    for(int col=0; col<cellsInRow.size(); col++) {
-                       grid[row][col] = cellsInRow.get(col).getValue();
-                    }
-                }
-            } else if(dir == SlideDirection.UP) {
-                for(int col=0; col<grid[0].length; col++) {
-                    ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
-                    mergeCells(cellsInCol, SlideDirection.UP);
-
-                    //Wipe column before adding back merged array
-                    wipeCol(col);
-
-                    for(int row=0; row<cellsInCol.size(); row++) {
-                        grid[row][col] = cellsInCol.get(row).getValue();
-                    }
-                }
-            } else if(dir == SlideDirection.DOWN) {
-                for(int col=0; col<grid[0].length; col++) {
-                    ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
-                    mergeCells(cellsInCol, SlideDirection.DOWN);
-
-                    //wipe this shit m8
-                    wipeCol(col);
-
-                    for(int i=0; i<cellsInCol.size(); i++) {
-                        grid[grid.length-i-1][col] = cellsInCol.get(cellsInCol.size()-i-1).getValue();
-                    }
+                for(int i=0; i<cellsInRow.size(); i++) {
+                    grid[row][grid[row].length-i-1] = cellsInRow.get(cellsInRow.size()-i-1).getValue();
                 }
             }
+        } else if(dir == SlideDirection.LEFT) {
+            for(int row=0; row<grid.length; row++) {
+                ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
+                mergeCells(cellsInRow, SlideDirection.LEFT);
 
-            //Check for if anything changed, to see to add one randcell after or not
-            for(Cell cell : lastSave) {
+                //Wipe current row before adding back merged array
+                wipeRow(row);
 
+                for(int col=0; col<cellsInRow.size(); col++) {
+                   grid[row][col] = cellsInRow.get(col).getValue();
+                }
             }
+        } else if(dir == SlideDirection.UP) {
+            for(int col=0; col<grid[0].length; col++) {
+                ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
+                mergeCells(cellsInCol, SlideDirection.UP);
 
-            placeRandomValue();
+                //Wipe column before adding back merged array
+                wipeCol(col);
+
+                for(int row=0; row<cellsInCol.size(); row++) {
+                    grid[row][col] = cellsInCol.get(row).getValue();
+                }
+            }
+        } else if(dir == SlideDirection.DOWN) {
+            for(int col=0; col<grid[0].length; col++) {
+                ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
+                mergeCells(cellsInCol, SlideDirection.DOWN);
+
+                //wipe this shit m8
+                wipeCol(col);
+
+                for(int i=0; i<cellsInCol.size(); i++) {
+                    grid[grid.length-i-1][col] = cellsInCol.get(cellsInCol.size()-i-1).getValue();
+                }
+            }
         }
 
-        return canSlide;
+
+        //Check for if anything changed, to see to add one randcell after or not
+        for(Cell cell : ((ArrayList<Cell>)allMoves.get(allMoves.size()-1))) {
+            if(grid[cell.getRow()][cell.getColumn()] != cell.getValue()) {
+                placeRandomValue();
+                saveBoard();
+                return true;
+            }
+        }
+
+
+        return false;
     }
 
     @Override
@@ -168,27 +162,22 @@ public class NumberGameArrayList implements NumberSlider {
 
     @Override
     public void undo() {
-
-        this.grid = new int[rows][columns];
-
-        for(Cell cell : lastSave) {
-            this.grid[cell.getRow()][cell.getColumn()] = cell.getValue();
+        if(allMoves.size() > 1) {
+            this.allMoves.remove(allMoves.size()-1);
+            this.grid = new int[rows][columns];
+            for(Cell cell : ((ArrayList<Cell>)allMoves.get(allMoves.size()-1))) {
+                this.grid[cell.getRow()][cell.getColumn()] = cell.getValue();
+            }
+        } else {
+            throw new IllegalStateException();
         }
     }
 
     /**
-     * Saves the current board values to lastSave ArrayList
+     * Saves the current board values to allMoves ArrayList
      */
     private void saveBoard() {
-        this.lastSave = new ArrayList<>();
-
-        for(int row=0; row<this.rows; row++) {
-            for(int col=0; col<this.columns; col++) {
-                if(grid[row][col] != 0) {
-                    lastSave.add(new Cell(row, col, grid[row][col]));
-                }
-            }
-        }
+        this.allMoves.add(getNonEmptyTiles());
     }
 
     //TODO check for invalids later
