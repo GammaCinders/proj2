@@ -14,17 +14,16 @@ public class GUI1024Panel2 extends JPanel {
     private JLabel[][] gameBoardUI;
     private NumberGameArrayList gameLogic;
 
-    public GUI1024Panel2(int rows, int cols, int winningValue) {
+    public GUI1024Panel2() {
         gameLogic = new NumberGameArrayList();
-        gameLogic.resizeBoard(rows, cols, winningValue);
+        gameLogic.resizeBoard(4, 4, 16);
 
         setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-        setLayout(new GridLayout(rows, cols));
+        setLayout(new GridLayout(4, 4));
 
-        gameBoardUI = new JLabel[rows][cols];
+        gameBoardUI = new JLabel[4][4];
 
         Font myTextFont = new Font(Font.SERIF, Font.BOLD, 40);
-
         for (int k = 0; k < gameBoardUI.length; k++)
             for (int m = 0; m < gameBoardUI[k].length; m++) {
                 gameBoardUI[k][m] = new JLabel();

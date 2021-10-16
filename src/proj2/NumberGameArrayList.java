@@ -18,11 +18,7 @@ public class NumberGameArrayList implements NumberSlider {
 
     public NumberGameArrayList() {
         resizeBoard(4, 4, 16);
-
-    }
-
-    public NumberGameArrayList(int rows, int columns, int winningValue) {
-        resizeBoard(rows, columns, winningValue);
+        reset();
     }
 
     @Override
@@ -31,15 +27,23 @@ public class NumberGameArrayList implements NumberSlider {
         this.columns = width;
 
         this.grid = new int[this.rows][this.columns];
-        this.winningValue = winningValue;
+        if(isPowerOf2(winningValue)) {
+            this.winningValue = winningValue;
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
+    //TODO this always has to be called after resizeBoard() before other methods
     @Override
     public void reset() {
         this.grid = new int[this.rows][this.columns];
+        this.gameStatus = GameStatus.IN_PROGRESS;
         placeRandomValue();
         placeRandomValue();
+        this.allMoves = new ArrayList<>();
         saveBoard();
+        //updateIfLost();
     }
 
     @Override
@@ -47,9 +51,12 @@ public class NumberGameArrayList implements NumberSlider {
         resizeBoard(ref.length, ref[0].length, this.winningValue);
         for(int row=0; row<ref.length; row++) {
             for(int col=0; col<ref[row].length; col++) {
-                this.grid[row][col] = ref[row][col];
+                if(ref[row][col] != 0) {
+                    this.grid[row][col] = ref[row][col];
+                }
             }
         }
+        saveBoard();
     }
 
     @Override
@@ -125,16 +132,15 @@ public class NumberGameArrayList implements NumberSlider {
             }
         }
 
-
         //Check for if anything changed, to see to add one randcell after or not
         for(Cell cell : ((ArrayList<Cell>)allMoves.get(allMoves.size()-1))) {
             if(grid[cell.getRow()][cell.getColumn()] != cell.getValue()) {
                 placeRandomValue();
                 saveBoard();
+                //updateIfLost();
                 return true;
             }
         }
-
 
         return false;
     }
@@ -213,7 +219,9 @@ public class NumberGameArrayList implements NumberSlider {
                 if(cells.get(i).getValue() == cells.get(i-1).getValue()) {
                     cells.remove(i);
                     cells.get(i-1).setValue(cells.get(i-1).getValue()*2);
-                    //TODO this should prevent double/extra merging, but I'll see
+                    if(cells.get(i-1).getValue() == winningValue) {
+                        gameStatus = GameStatus.USER_WON;
+                    }
                     i--;
                 }
             }
@@ -222,6 +230,9 @@ public class NumberGameArrayList implements NumberSlider {
                 if(cells.get(i).getValue() == cells.get(i+1).getValue()) {
                     cells.remove(i);
                     cells.get(i).setValue(cells.get(i).getValue()*2);
+                    if(cells.get(i).getValue() == winningValue) {
+                        gameStatus = GameStatus.USER_WON;
+                    }
                 }
             }
         }
@@ -240,6 +251,37 @@ public class NumberGameArrayList implements NumberSlider {
         //TODO add invalid check
         for(int row=0; row<grid.length; row++) {
             grid[row][col] = 0;
+        }
+    }
+
+    //Tells if the user has lost based on the current grid
+    private void updateIfLost() {
+        NumberGameArrayList checker = new NumberGameArrayList();
+        checker.setValues(this.grid);
+        //This is so inefficient and cringe, but I
+        //really don't know how else to do this
+        if(!checker.slide(SlideDirection.UP)
+                && !checker.slide(SlideDirection.DOWN)
+                && !checker.slide(SlideDirection.LEFT)
+                && !checker.slide(SlideDirection.RIGHT)) {
+            gameStatus = GameStatus.USER_LOST;
+        }
+    }
+
+    //0 returns false in this case, since that wouldn't be
+    //a valid winningScore anyways
+    private boolean isPowerOf2(int n) {
+        double pow = n;
+        if(pow % 2 == 1 || pow == 0) {
+            return false;
+        } else {
+            while(pow != 1) {
+                pow /= 2;
+                if(pow % 1 != 0) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
