@@ -1,43 +1,77 @@
 package proj2;
 
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**********************************************************************
+ * Computes all the logic of the 1024 game. Contains a 2d array
+ * representing the play grid that can be resized, swiped, reset,
+ * ect. Also contains an ArrayList of every previously made move
+ * for undoing.
+ *
+ * @version 10/16/21
+ * @author Keagen, Eric
+ *********************************************************************/
 public class NumberGameArrayList implements NumberSlider {
 
-    //Used to store and manipulate grid values
+    /**2d array used to store and manipulate cell values */
     private int[][] grid;
+    /**Barely used vars for the number of rows and cols respectively*/
     private int rows, columns;
+    /**A power of 2 number that a cell must reach to win the game*/
     private int winningValue;
 
+    /**An enum to track the current game state*/
     private GameStatus gameStatus = GameStatus.IN_PROGRESS;
 
-    //Mostly for used for undo, can save any board state to be used later
+    /** An ArrayList of Cell ArrayLists for undo(), saves board states
+     *  in order when save() is called so that they can be loaded
+     *  back later in undo()
+     */
     private ArrayList<ArrayList> allMoves = new ArrayList<>();
 
+    /******************************************************************
+     * A default constructor that initializes the board with height 4,
+     * width 4, and winningValue of 16. Also calls reset() to prevent
+     * any errors with allMoves being empty otherwise. Use
+     * resizeBoard() to set desired size.
+     *****************************************************************/
     public NumberGameArrayList() {
         resizeBoard(4, 4, 16);
         reset();
     }
 
+    /******************************************************************
+     * Resets the board with the number of rows and columns, as well
+     * as the target win value to the arguments. Also sets gameStatus
+     * to IN_PROGRESS. This should be called after the initialization
+     * for any size board different from the default:
+     * (4 by 4, winningValue of 16).
+     * @param height the number of rows in the board
+     * @param width the number of columns in the board
+     * @param winningValue the value that must appear on the board to
+     *                     win the game
+     * @throws IllegalArgumentException If height, width, or
+     *                                  winningValue is less than 1,
+     *                                  and if winningValue is not a
+     *                                  power of 2
+     *****************************************************************/
     @Override
     public void resizeBoard(int height, int width, int winningValue) {
-        this.rows = height;
-        this.columns = width;
-
-        this.grid = new int[this.rows][this.columns];
-
-        this.gameStatus = GameStatus.IN_PROGRESS;
-
-        if(isPowerOf2(winningValue)) {
+        if(isPowerOf2(winningValue) && height > 0 && width > 0) {
             this.winningValue = winningValue;
+            this.rows = height;
+            this.columns = width;
+            this.grid = new int[this.rows][this.columns];
+            this.gameStatus = GameStatus.IN_PROGRESS;
         } else {
             throw new IllegalArgumentException();
         }
     }
 
-    //TODO this always has to be called after resizeBoard() before other methods
+    /******************************************************************
+     * Removes all numbered cells from the board and places 2 new
+     * random cells
+     *****************************************************************/
     @Override
     public void reset() {
         this.grid = new int[this.rows][this.columns];
@@ -46,9 +80,13 @@ public class NumberGameArrayList implements NumberSlider {
         placeRandomValue();
         this.allMoves = new ArrayList<>();
         saveBoard();
-        //updateIfLost();
     }
 
+    /******************************************************************
+     * Sets the board to fit and hold the values of the passed 2d
+     * array.
+     * @param ref The 2d array with values to set the board to
+     *****************************************************************/
     @Override
     public void setValues(int[][] ref) {
         resizeBoard(ref.length, ref[0].length, this.winningValue);
@@ -67,26 +105,41 @@ public class NumberGameArrayList implements NumberSlider {
         }
     }
 
+    /******************************************************************
+     * Places a cell of value 2 at an empty board location.
+     * @return a Cell object with its row, column, and value attributes
+     * initialized properly.
+     * @throws IllegalStateException if the board is full.
+     *****************************************************************/
     @Override
     public Cell placeRandomValue() {
-
-        Cell newRandCell = new Cell();
-        newRandCell.setColumn((int)(Math.random()*(this.columns)));
-        newRandCell.setRow((int)(Math.random()*(this.rows)));
-        //TODO add some random number (2 or 4) to this
-        newRandCell.setValue(2);
-
-        //TODO this won't work later for when have to check if entire board is full
-        while(grid[newRandCell.getRow()][newRandCell.getColumn()] != 0) {
+        if(getNonEmptyTiles().size() == grid.length*grid[0].length) {
+            throw new IllegalStateException();
+        } else {
+            Cell newRandCell = new Cell();
             newRandCell.setColumn((int)(Math.random()*(this.columns)));
             newRandCell.setRow((int)(Math.random()*(this.rows)));
+            newRandCell.setValue(2);
+
+            while(grid[newRandCell.getRow()][newRandCell.getColumn()] != 0) {
+                newRandCell.setColumn((int)(Math.random()*(this.columns)));
+                newRandCell.setRow((int)(Math.random()*(this.rows)));
+            }
+
+            this.grid[newRandCell.getRow()][newRandCell.getColumn()] = newRandCell.getValue();
+            return newRandCell;
         }
-
-        this.grid[newRandCell.getRow()][newRandCell.getColumn()] = newRandCell.getValue();
-
-        return newRandCell;
     }
 
+    /******************************************************************
+     * Slides all the tiles in the game to the direction given. This
+     * merges nearby same value cells to be twice the value if
+     * possible.
+     * @param dir move direction of the tiles
+     *
+     * @return true if the board has changed (any tile has a different
+     * value than before the move), false otherwise
+     *****************************************************************/
     @Override
     public boolean slide(SlideDirection dir) {
 
@@ -155,6 +208,12 @@ public class NumberGameArrayList implements NumberSlider {
         return false;
     }
 
+    /******************************************************************
+     * Returns an ArrayList of cells where each cell is a non-zero
+     * value on the grid.
+     * @return an ArrayList of cells where each cell is a non-zero
+     * value on the grid
+     *****************************************************************/
     @Override
     public ArrayList<Cell> getNonEmptyTiles() {
         ArrayList<Cell> cells = new ArrayList<>();
@@ -171,11 +230,22 @@ public class NumberGameArrayList implements NumberSlider {
         return cells;
     }
 
+    /******************************************************************
+     * Returns the state of the game
+     * @return a value of the GameStatus enum
+     *****************************************************************/
     @Override
     public GameStatus getStatus() {
         return this.gameStatus;
     }
 
+    /******************************************************************
+     * Undo the most recent action, i.e. restore the board to its previous
+     * state. Calling this method multiple times will ultimately restore
+     * the game to the very first initial state of the board holding two
+     * random values. Further attempt to undo beyond this state will throw
+     * an IllegalStateException.
+     *****************************************************************/
     @Override
     public void undo() {
         if(allMoves.size() > 1) {
@@ -189,40 +259,70 @@ public class NumberGameArrayList implements NumberSlider {
         }
     }
 
-    /**
+    /******************************************************************
      * Saves the current board values to allMoves ArrayList
-     */
+     *****************************************************************/
     private void saveBoard() {
         this.allMoves.add(getNonEmptyTiles());
     }
 
-    //TODO check for invalids later
+    /******************************************************************
+     * Returns and ArrayList of cells that are at the INDEX of
+     * the arg row
+     * @param row index of desired row in grid
+     * @return ArrayList of each non-empty tile in the row
+     * @throws IllegalArgumentException if the row is < 0 or >= the
+     *                                  current number of board rows
+     *****************************************************************/
     private ArrayList<Cell> convertGridRowToCellArrayList(int row) {
-        ArrayList<Cell> cellsInRow = new ArrayList<>();
-        for(int col=0; col<grid[row].length; col++) {
-            if(grid[row][col] != 0) {
-                cellsInRow.add(new Cell(row, col, grid[row][col]));
+        if(row < 0 || row >= this.rows) {
+            throw new IllegalArgumentException();
+        } else {
+            ArrayList<Cell> cellsInRow = new ArrayList<>();
+            for(int col=0; col<grid[row].length; col++) {
+                if(grid[row][col] != 0) {
+                    cellsInRow.add(new Cell(row, col, grid[row][col]));
+                }
             }
-        }
 
-        return cellsInRow;
+            return cellsInRow;
+        }
     }
 
-    //TODO check for invalids later
+    /******************************************************************
+     * Returns and ArrayList of cells that are at the INDEX of
+     * the arg col
+     * @param col index of desired col in grid
+     * @return ArrayList of each non-empty tile in the col
+     * @throws IllegalArgumentException if the col is < 0 or >= the
+     *                                  current number of board cols
+     *****************************************************************/
     private ArrayList<Cell> convertGridColToCellArrayList(int col) {
-        ArrayList<Cell> cellsInRow = new ArrayList<>();
-        for(int row=0; row<grid.length; row++) {
-            if(grid[row][col] != 0) {
-                cellsInRow.add(new Cell(row, col, grid[row][col]));
+        if(col < 0 || col >= this.columns) {
+            throw new IllegalArgumentException();
+        } else {
+            ArrayList<Cell> cellsInRow = new ArrayList<>();
+            for(int row=0; row<grid.length; row++) {
+                if(grid[row][col] != 0) {
+                    cellsInRow.add(new Cell(row, col, grid[row][col]));
+                }
             }
-        }
 
-        return cellsInRow;
+            return cellsInRow;
+        }
     }
 
-    //TODO again check invalids
-    //right and down are the same, left and up are the same
-    private ArrayList<Cell> mergeCells(ArrayList<Cell> cells, SlideDirection dir) {
+    /******************************************************************
+     * Mutates/Merges an ArrayList of cells based on the slide direction, used
+     * for each row or col of slide()
+     * @param cells ArrayList of cells to merge
+     * @param dir board direction to merge the cells
+     * @return ArrayList of merged cells, which still has the same
+     *          reference as the passed arg, (no new ArrayList is
+     *          created!)
+     *****************************************************************/
+    private ArrayList<Cell> mergeCells(ArrayList<Cell> cells,
+                                       SlideDirection dir) {
         if(dir == SlideDirection.RIGHT || dir == SlideDirection.DOWN) {
             //goes right to left for merging, goes to 1 because that checks 0
             for(int i=cells.size()-1; i>0; i--) {
@@ -250,27 +350,46 @@ public class NumberGameArrayList implements NumberSlider {
         return cells;
     }
 
+    /******************************************************************
+     * Cleans an entire index row (sets all values to 0)
+     * @param row row index in grid to wipe
+     * @throws IllegalArgumentException if row < 0 or > grid rows
+     *****************************************************************/
     private void wipeRow(int row) {
-        //TODO check for num row too big, small, neg, etc
-        for(int col=0; col<grid[row].length; col++) {
-            grid[row][col] = 0;
+        if(row < 0 || row >= this.rows) {
+            throw new IllegalArgumentException();
+        } else {
+            for(int col=0; col<grid[row].length; col++) {
+                grid[row][col] = 0;
+            }
         }
     }
 
+    /******************************************************************
+     * Cleans an entire index col (sets all values to 0)
+     * @param col col index in grid to wipe
+     * @throws IllegalArgumentException if col < 0 or > grid cols
+     *****************************************************************/
     private void wipeCol(int col) {
-        //TODO add invalid check
-        for(int row=0; row<grid.length; row++) {
-            grid[row][col] = 0;
+        if(col < 0 || col >= this.columns) {
+            throw new IllegalArgumentException();
+        } else {
+            for(int row=0; row<grid.length; row++) {
+                grid[row][col] = 0;
+            }
         }
+
     }
 
-    //Tells if the user has lost based on the current grid
-    //Returns true if the user lost
+    /******************************************************************
+     * Checks to see if the game has been lost
+     * @return bool true if the board is full and there are no more
+     * valid moves, false otherwise
+     *****************************************************************/
     private boolean isGameLost() {
         if(grid.length*grid[0].length == allMoves.get(allMoves.size()-1).size()) {
             for(int row=0; row<rows; row++) {
                 ArrayList<Cell> cellRow = convertGridRowToCellArrayList(row);
-                //TODO IDK if this works
                 if(cellRow.size() != mergeCells(cellRow, SlideDirection.RIGHT).size()) {
                     return false;
                 }
@@ -290,11 +409,16 @@ public class NumberGameArrayList implements NumberSlider {
         return false;
     }
 
-    //0 returns false in this case, since that wouldn't be
-    //a valid winningScore anyways
+    /******************************************************************
+     * Checks if the given number is a power of 2. In this case it must
+     * also be > 0 since this is used to check for valid winningValues.
+     * @param n number to check if it is a power of 2
+     * @return bool true if n is both > 0 and a power of 2, false
+     * otherwise
+     *****************************************************************/
     private boolean isPowerOf2(int n) {
         double pow = n;
-        if(pow % 2 == 1 || pow == 0) {
+        if(pow % 2 == 1 || pow < 1) {
             return false;
         } else {
             while(pow != 1) {

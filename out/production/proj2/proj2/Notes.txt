@@ -1,0 +1,1 @@
+setValues may need a check for null array. It doesn't say in the interface though.

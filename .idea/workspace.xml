@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="faa1f289-5e45-46aa-91e0-a4ad2e610fdd" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/proj2/Notes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/NumberGameArrayList.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/NumberGameArrayList.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/proj2/NumberGameArrayList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/NumberGameArrayList.java" afterDir="false" />
@@ -23,6 +24,9 @@
     </file-type-list>
   </component>
   <component name="ProjectId" id="1zTfivzJLZEdQ2S8y3ymRyVAdGi" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -41,6 +45,19 @@
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
   <component name="RunManager" selected="JUnit.TenTwentyFourTester">
+    <configuration name="GUI1024" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="proj2.GUI1024" />
+      <module name="proj2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="proj2.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="TenTwentyFourTester" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="proj2" />
       <extension name="coverage">
@@ -52,22 +69,6 @@
       <option name="PACKAGE_NAME" value="proj2" />
       <option name="MAIN_CLASS_NAME" value="proj2.TenTwentyFourTester" />
       <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="TenTwentyFourTester.testIsGameBoardFullNoMoreMoves" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="proj2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="proj2.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="proj2" />
-      <option name="MAIN_CLASS_NAME" value="proj2.TenTwentyFourTester" />
-      <option name="METHOD_NAME" value="testIsGameBoardFullNoMoreMoves" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -123,10 +124,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.TenTwentyFourTester" />
+        <item itemvalue="Application.GUI1024" />
         <item itemvalue="JUnit.TenTwentyFourTester.testSetValues" />
         <item itemvalue="JUnit.TenTwentyFourTester.testIsGameOverAfterReset" />
         <item itemvalue="JUnit.TenTwentyFourTester.testIsGameBoardNotFull" />
-        <item itemvalue="JUnit.TenTwentyFourTester.testIsGameBoardFullNoMoreMoves" />
       </list>
     </recent_temporary>
   </component>
