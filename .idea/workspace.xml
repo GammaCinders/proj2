@@ -2,10 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="faa1f289-5e45-46aa-91e0-a4ad2e610fdd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/proj2/Notes.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/NumberGameArrayList.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/NumberGameArrayList.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/proj2/NumberGameArrayList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/NumberGameArrayList.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/proj2/GUI1024.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/GUI1024.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/proj2/TextUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/TextUI.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,11 +44,27 @@
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.1530343" />
     <property name="project.structure.side.proportion" value="0.2" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
   </component>
-  <component name="RunManager" selected="JUnit.TenTwentyFourTester">
+  <component name="RunManager" selected="Application.GUI1024">
     <configuration name="GUI1024" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="proj2.GUI1024" />
+      <module name="proj2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="proj2.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TextUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="proj2.TextUI" />
       <module name="proj2" />
       <extension name="coverage">
         <pattern>
@@ -69,22 +87,6 @@
       <option name="PACKAGE_NAME" value="proj2" />
       <option name="MAIN_CLASS_NAME" value="proj2.TenTwentyFourTester" />
       <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="TenTwentyFourTester.testIsGameBoardNotFull" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="proj2" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="proj2.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="proj2" />
-      <option name="MAIN_CLASS_NAME" value="proj2.TenTwentyFourTester" />
-      <option name="METHOD_NAME" value="testIsGameBoardNotFull" />
-      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -123,11 +125,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.TenTwentyFourTester" />
         <item itemvalue="Application.GUI1024" />
+        <item itemvalue="Application.TextUI" />
+        <item itemvalue="JUnit.TenTwentyFourTester" />
         <item itemvalue="JUnit.TenTwentyFourTester.testSetValues" />
         <item itemvalue="JUnit.TenTwentyFourTester.testIsGameOverAfterReset" />
-        <item itemvalue="JUnit.TenTwentyFourTester.testIsGameBoardNotFull" />
       </list>
     </recent_temporary>
   </component>
@@ -165,6 +167,11 @@
           <url>file://$PROJECT_DIR$/src/proj2/TenTwentyFourTester.java</url>
           <line>550</line>
           <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/proj2/TextUI.java</url>
+          <line>42</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

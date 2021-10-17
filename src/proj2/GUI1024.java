@@ -8,7 +8,7 @@ public class GUI1024 {
         gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         GUI1024Panel2 panel = new GUI1024Panel2();
-        //panel.setFocusable(true);
+        panel.setFocusable(true);
         gui.getContentPane().add(panel);
 
         gui.setSize(panel.getSize());

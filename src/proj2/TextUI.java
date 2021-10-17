@@ -1,5 +1,7 @@
 package proj2;
 
+import java.security.Signature;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TextUI {
@@ -32,14 +34,16 @@ public class TextUI {
 
     private void renderBoard() {
         /* reset all the 2D array elements to ZERO */
-        for (int k = 0; k < grid.length; k++)
-            for (int m = 0; m < grid[k].length; m++)
+        for (int k = 0; k < grid.length; k++) {
+            for (int m = 0; m < grid[k].length; m++) {
                 grid[k][m] = 0;
+            }
+        }
 
-        // =========================================================================
-        // TODO
-        /* fill in the 2D array using information for non-empty tiles */
-        // =========================================================================
+        ArrayList<Cell> cells = game.getNonEmptyTiles();
+        for(Cell cell : cells) {
+            grid[cell.getRow()][cell.getColumn()] = cell.getValue();
+        }
 
         /* Print the 2D array using dots and numbers */
         for (int k = 0; k < grid.length; k++) {
@@ -59,24 +63,40 @@ public class TextUI {
      * game engine.
      */
     public void playLoop() {
-        /* Place the first two random tiles */
-        game.placeRandomValue();
-        game.placeRandomValue();
+        game.reset();
         renderBoard();
 
-        /* To keep the right margin within 75 columns, we split the
-           following long string literal into two lines
-         */
         System.out.print ("Slide direction (W, S, Z, A), " +
                 "[U]ndo or [Q]uit? ");
 
 
-        // =========================================================================
-        // TODO
-        // loop on:
-        //        Get user input and slide up, down, left, right
-        //        renderBoard
-        // =========================================================================
+        char key = ' ';
+        while(key != 'Q') {
+            String input = inp.next();
+            if(input.length() == 1) {
+                key = input.charAt(0);
+            }
+
+            switch (key) {
+                case 'W':
+                    game.slide(SlideDirection.UP);
+                    break;
+                case 'A':
+                    game.slide(SlideDirection.LEFT);
+                    break;
+                case 'Z':
+                    game.slide(SlideDirection.DOWN);
+                    break;
+                case 'S':
+                    game.slide(SlideDirection.RIGHT);
+                    break;
+                case 'U':
+                    game.undo();
+                    break;
+            }
+            renderBoard();
+            //key = ' ';
+        }
 
 
         /* Almost done.... */
@@ -90,7 +110,6 @@ public class TextUI {
             case USER_LOST:
                 System.out.println ("Sorry....!");
                 break;
-
         }
     }
 
