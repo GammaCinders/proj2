@@ -14,7 +14,10 @@ public class GUI1024Panel2 extends JPanel {
     private JLabel[][] gameBoardUI;
     private NumberGameArrayList gameLogic;
 
-    public GUI1024Panel2() {
+    private JMenuItem changeWinValue, reset, quit;
+
+    public GUI1024Panel2(JMenuItem changeWin, JMenuItem reset, JMenuItem quit) {
+        setSize(800, 800);
         gameLogic = new NumberGameArrayList();
         gameLogic.resizeBoard(4, 4, 16);
 
@@ -37,6 +40,14 @@ public class GUI1024Panel2 extends JPanel {
         updateBoard();
         setFocusable(true);
         addKeyListener(new SlideListener());
+
+        //Setup for stuff from GUI1024
+        this.changeWinValue = changeWin;
+        this.reset = reset;
+        this.quit = quit;
+        this.changeWinValue.addActionListener(new OptionsListener());
+        this.reset.addActionListener(new OptionsListener());
+        this.quit.addActionListener(new OptionsListener());
     }
 
     private void updateBoard() {
@@ -65,16 +76,16 @@ public class GUI1024Panel2 extends JPanel {
         public void keyPressed(KeyEvent e) {
             boolean moved = false;
             switch (e.getKeyCode()) {
-                case KeyEvent.VK_COMMA:
+                case KeyEvent.VK_UP:
                     moved = gameLogic.slide(SlideDirection.UP);
                     break;
-                case KeyEvent.VK_A:
+                case KeyEvent.VK_LEFT:
                     moved = gameLogic.slide(SlideDirection.LEFT);
                     break;
-                case KeyEvent.VK_O:
+                case KeyEvent.VK_DOWN:
                     moved = gameLogic.slide(SlideDirection.DOWN);
                     break;
-                case KeyEvent.VK_E:
+                case KeyEvent.VK_RIGHT:
                     moved = gameLogic.slide(SlideDirection.RIGHT);
                     break;
                 case KeyEvent.VK_U:
@@ -108,8 +119,24 @@ public class GUI1024Panel2 extends JPanel {
         public void keyReleased(KeyEvent e) { }
 
         @Override
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent e) { }
 
+    }
+
+    private class OptionsListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == changeWinValue) {
+                //TODO this is fairly hard I think, I'll see
+            } else if(e.getSource() == reset) {
+                gameLogic.reset();
+                updateBoard();
+            } else if(e.getSource() == quit) {
+                System.exit(1);
+            } else {
+                //TODO probably don't need anything here but idk
+            }
         }
     }
 }

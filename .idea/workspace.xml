@@ -4,10 +4,10 @@
     <list default="true" id="faa1f289-5e45-46aa-91e0-a4ad2e610fdd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/TextUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2$SlideListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2$SlideListener.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/proj2/GUI1024.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/GUI1024.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/proj2/TextUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/TextUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/proj2/GUI1024Panel2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/GUI1024Panel2.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
