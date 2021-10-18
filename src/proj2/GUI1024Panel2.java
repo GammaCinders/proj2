@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GUI1024Panel2 extends JPanel {
@@ -16,7 +17,11 @@ public class GUI1024Panel2 extends JPanel {
 
     private JMenuItem changeWinValue, reset, quit;
 
-    public GUI1024Panel2(JMenuItem changeWin, JMenuItem reset, JMenuItem quit) {
+    /**Watch me do some swaggy shit with this*/
+    private ArrayList<Color> colors = new ArrayList<>();
+
+    public GUI1024Panel2(JMenuItem changeWin,
+                         JMenuItem reset, JMenuItem quit) {
         setSize(800, 800);
         gameLogic = new NumberGameArrayList();
         gameLogic.resizeBoard(4, 4, 16);
@@ -26,15 +31,23 @@ public class GUI1024Panel2 extends JPanel {
 
         gameBoardUI = new JLabel[4][4];
 
-        Font myTextFont = new Font(Font.SERIF, Font.BOLD, 40);
-        for (int k = 0; k < gameBoardUI.length; k++)
+        Font myTextFont = new Font(Font.MONOSPACED, Font.BOLD, 40);
+        for (int k = 0; k < gameBoardUI.length; k++) {
             for (int m = 0; m < gameBoardUI[k].length; m++) {
-                gameBoardUI[k][m] = new JLabel();
+                gameBoardUI[k][m] = new JLabel("",
+                        SwingConstants.CENTER);
                 gameBoardUI[k][m].setFont(myTextFont);
-                gameBoardUI[k][m].setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-                gameBoardUI[k][m].setPreferredSize(new Dimension(100, 100));
+                gameBoardUI[k][m].setBorder(
+                        BorderFactory.createBevelBorder(BevelBorder.RAISED));
+                gameBoardUI[k][m].setForeground(Color.RED);
+                gameBoardUI[k][m].setPreferredSize(
+                        new Dimension(100, 100));
+
+                //TODO huh
+                setBackground(Color.GRAY);
                 add(gameBoardUI[k][m]);
             }
+        }
 
         gameLogic.reset();
         updateBoard();
@@ -53,6 +66,7 @@ public class GUI1024Panel2 extends JPanel {
     private void updateBoard() {
         for (JLabel[] row : gameBoardUI)
             for (JLabel s : row) {
+                s.setBackground(Color.GRAY);
                 s.setText("");
             }
 
@@ -65,8 +79,63 @@ public class GUI1024Panel2 extends JPanel {
             JLabel z = gameBoardUI[c.row][c.column];
             z.setText(String.valueOf(Math.abs(c.value)));
             z.setForeground(c.value > 0 ? Color.BLACK : Color.RED);
+            z.setBackground(generateColor(c.getValue()));
         }
     }
+
+    /******************************************************************
+     * Sick ass algorithm to create random Colors that usually look
+     * nice and are also usually different for as many as are needed.
+     * They are stored in colors ArrayList
+     * @param value value of tile
+     * @return A color based on the number value and its closest
+     *          power of 2
+     * @throws IllegalArgumentException if value < 2
+     */
+    private Color generateColor(int value) {
+        if(value < 2) {
+            throw new IllegalArgumentException();
+        }
+
+        int colorNumber;
+
+        //Since numbers go up by powers of 2, have to find
+        //roughly the closest power of 2
+        for(colorNumber=0; value>1; value/=2) {
+            colorNumber++;
+        }
+
+        //Generate colors up to the needed number
+        if(colorNumber > colors.size()) {
+            for(int i=colors.size(); i<colorNumber; i++) {
+                int r = 255;
+                int g = 255;
+                int b = 255;
+
+                //while loop to prevent getting a bunch of gray colors,
+                //could be more efficient, but shouldn't matter here
+                while(Math.abs(r-g) < 20
+                        && Math.abs(g-b) < 20
+                        && Math.abs(b-r) < 20) {
+                    r = (int)(Math.random()*256);
+                    g = (int)(Math.random()*256);
+                    b =(int)(Math.random()*256);
+                }
+
+                //This averages each random value with 50 to ensure
+                //the values are darker and easy to see
+                r = (r + 50)/2;
+                g = (g + 50)/2;
+                b = (b + 50)/2;
+
+                colors.add(new Color(r, g, b));
+            }
+        }
+
+        //Return the color for the closest power of 2
+        return colors.get(colorNumber-1);
+    }
+
 
     private class SlideListener implements KeyListener, ActionListener {
         @Override
@@ -128,7 +197,21 @@ public class GUI1024Panel2 extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == changeWinValue) {
-                //TODO this is fairly hard I think, I'll see
+                try {
+                    //This 3 lines suck ass to read,
+                    //but I have to do it for 'style'
+                    gameLogic.setWinningValue(Integer.parseInt(
+                                        JOptionPane.showInputDialog(
+                                            "Enter new win value")));
+                } catch(NumberFormatException notNum) {
+                    JOptionPane.showMessageDialog(
+                            null, "Input is not a number");
+                } catch(IllegalArgumentException illArg) {
+                    JOptionPane.showMessageDialog(
+                            null, "Input is not a valid power of 2");
+                } catch(Exception exc) {
+                    //TODO maybe add something here
+                }
             } else if(e.getSource() == reset) {
                 gameLogic.reset();
                 updateBoard();

@@ -57,7 +57,7 @@ public class NumberGameArrayList implements NumberSlider {
      *****************************************************************/
     @Override
     public void resizeBoard(int height, int width, int winningValue) {
-        if(isPowerOf2(winningValue) && height > 0 && width > 0) {
+        if(validPowerOf2(winningValue) && height > 0 && width > 0) {
             this.winningValue = winningValue;
             this.rows = height;
             this.columns = width;
@@ -102,6 +102,20 @@ public class NumberGameArrayList implements NumberSlider {
             gameStatus = GameStatus.USER_LOST;
         } else {
             this.gameStatus = GameStatus.IN_PROGRESS;
+        }
+    }
+
+    /******************************************************************
+     * Sets the board to fit and hold the values of the passed
+     * ArrayList of cells. Any grid value not covered by a cell
+     * becomes a 0 (empty cell). Can use getNonEmptyTiles
+     * to temporarily save a board and then load back with this method.
+     * @param ref The cell ArrayList with values to set the board to
+     *****************************************************************/
+    public void setValues(ArrayList<Cell> ref) {
+        this.grid = new int[rows][columns];
+        for(Cell cell : ref) {
+            grid[cell.getRow()][cell.getColumn()] = cell.getValue();
         }
     }
 
@@ -411,14 +425,15 @@ public class NumberGameArrayList implements NumberSlider {
 
     /******************************************************************
      * Checks if the given number is a power of 2. In this case it must
-     * also be > 0 since this is used to check for valid winningValues.
+     * also be > 2 since this is used to check for valid winningValues
+     * and 2 is just a stupid win value
      * @param n number to check if it is a power of 2
-     * @return bool true if n is both > 0 and a power of 2, false
+     * @return bool true if n is both > 2 and a power of 2, false
      * otherwise
      *****************************************************************/
-    private boolean isPowerOf2(int n) {
+    private boolean validPowerOf2(int n) {
         double pow = n;
-        if(pow % 2 == 1 || pow < 1) {
+        if(pow % 2 == 1 || pow <= 2) {
             return false;
         } else {
             while(pow != 1) {
@@ -430,5 +445,42 @@ public class NumberGameArrayList implements NumberSlider {
             return true;
         }
     }
+
+    /******************************************************************
+     * Gives the current number of rows of the grid size
+     * @return int number of rows in the current grid
+     *****************************************************************/
+    public int getRows() {
+        return this.rows;
+    }
+
+    /******************************************************************
+     * Gives the current number of columns of the grid size
+     * @return int number of columns in the current grid
+     *****************************************************************/
+    public int getColumns() {
+        return this.columns;
+    }
+
+    /******************************************************************
+     * Sets the current winning value to the arg
+     * @param newWinValue the new value needed to win the game, has
+     *                    to be a power of 2 (and > 0).
+     * @throws IllegalArgumentException if newWinValue is not a
+     *                                  valid power of 2 (and > 0)
+     *****************************************************************/
+    public void setWinningValue(int newWinValue) {
+        if(validPowerOf2(newWinValue)) {
+            this.winningValue = newWinValue;
+        } else {
+            throw new IllegalArgumentException();
+        }
+        
+        //TODO I should check here for if the new win value
+        //TODO is already on the board
+        gameStatus = GameStatus.IN_PROGRESS;
+    }
+
+
 
 }
