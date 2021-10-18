@@ -2,6 +2,7 @@ package proj2;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 public class GUI1024Panel2 extends JPanel {
 
+    final int borderThickness = 3;
     private JLabel[][] gameBoardUI;
     private NumberGameArrayList gameLogic;
 
@@ -38,7 +40,7 @@ public class GUI1024Panel2 extends JPanel {
                         SwingConstants.CENTER);
                 gameBoardUI[k][m].setFont(myTextFont);
                 gameBoardUI[k][m].setBorder(
-                        BorderFactory.createBevelBorder(BevelBorder.RAISED));
+                        BorderFactory.createLineBorder(Color.lightGray, borderThickness));
                 gameBoardUI[k][m].setForeground(Color.RED);
                 gameBoardUI[k][m].setPreferredSize(
                         new Dimension(100, 100));
@@ -66,7 +68,7 @@ public class GUI1024Panel2 extends JPanel {
     private void updateBoard() {
         for (JLabel[] row : gameBoardUI)
             for (JLabel s : row) {
-                s.setBackground(Color.GRAY);
+                s.setBorder(BorderFactory.createLineBorder(Color.lightGray, borderThickness));
                 s.setText("");
             }
 
@@ -79,7 +81,7 @@ public class GUI1024Panel2 extends JPanel {
             JLabel z = gameBoardUI[c.row][c.column];
             z.setText(String.valueOf(Math.abs(c.value)));
             z.setForeground(c.value > 0 ? Color.BLACK : Color.RED);
-            z.setBackground(generateColor(c.getValue()));
+            z.setBorder(BorderFactory.createLineBorder(generateColor(c.getValue()), borderThickness));
         }
     }
 
@@ -122,11 +124,31 @@ public class GUI1024Panel2 extends JPanel {
                     b =(int)(Math.random()*256);
                 }
 
-                //This averages each random value with 50 to ensure
+                //This averages each random value with 30 to ensure
                 //the values are darker and easy to see
-                r = (r + 50)/2;
-                g = (g + 50)/2;
-                b = (b + 50)/2;
+                r = (r + 30)/2;
+                g = (g + 30)/2;
+                b = (b + 30)/2;
+
+                //Try to find a color in a new gray region, gives up
+                //after 10 tries at the most
+                boolean goodEnough;
+                for(int j=0; i<10; i++) {
+                    goodEnough = true;
+
+                    for(Color color : colors) {
+                        //Check if the average rgb value is similar to one that already exists
+                        if(Math.abs((color.getRed() + color.getBlue()
+                                + color.getGreen()/3) - ((r+g+b)/3)) < 20) {
+                            goodEnough = false;
+                        }
+                    }
+
+                    if(goodEnough) {
+                        break;
+                    }
+                }
+
 
                 colors.add(new Color(r, g, b));
             }
@@ -214,6 +236,7 @@ public class GUI1024Panel2 extends JPanel {
                 }
             } else if(e.getSource() == reset) {
                 gameLogic.reset();
+                colors = new ArrayList<>();
                 updateBoard();
             } else if(e.getSource() == quit) {
                 System.exit(1);
