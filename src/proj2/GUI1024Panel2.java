@@ -18,20 +18,44 @@ public class GUI1024Panel2 extends JPanel {
     private NumberGameArrayList gameLogic;
 
     private JMenuItem changeWinValue, reset, quit;
+    private JButton resizeBoardButton;
 
     /**Watch me do some swaggy shit with this*/
     private ArrayList<Color> colors = new ArrayList<>();
 
     public GUI1024Panel2(JMenuItem changeWin,
-                         JMenuItem reset, JMenuItem quit) {
-        setSize(800, 800);
+                         JMenuItem reset, JMenuItem quit,
+                         JButton resizeBoardButton) {
+
         gameLogic = new NumberGameArrayList();
-        gameLogic.resizeBoard(4, 4, 16);
-
         setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-        setLayout(new GridLayout(4, 4));
 
-        gameBoardUI = new JLabel[4][4];
+        resetBoard(4, 4, 16, false);
+
+        setFocusable(true);
+        addKeyListener(new SlideListener());
+
+        //Setup for stuff from GUI1024
+        this.changeWinValue = changeWin;
+        this.reset = reset;
+        this.quit = quit;
+        this.resizeBoardButton = resizeBoardButton;
+        this.changeWinValue.addActionListener(new OptionsListener());
+        this.reset.addActionListener(new OptionsListener());
+        this.quit.addActionListener(new OptionsListener());
+        this.resizeBoardButton.addActionListener(new OptionsListener());
+    }
+
+    private void resetBoard(int rows, int cols, int winningValue, boolean keepCurrentValues) {
+        ArrayList<Cell> oldCells = null;
+        if(keepCurrentValues) {
+            oldCells = gameLogic.getNonEmptyTiles();
+        }
+
+        gameLogic.resizeBoard(rows, cols, winningValue);
+        setLayout(new GridLayout(rows, cols));
+        gameBoardUI = new JLabel[rows][cols];
+        removeAll();
 
         Font myTextFont = new Font(Font.MONOSPACED, Font.BOLD, 40);
         for (int k = 0; k < gameBoardUI.length; k++) {
@@ -45,24 +69,18 @@ public class GUI1024Panel2 extends JPanel {
                 gameBoardUI[k][m].setPreferredSize(
                         new Dimension(100, 100));
 
-                //TODO huh
                 setBackground(Color.GRAY);
                 add(gameBoardUI[k][m]);
             }
         }
 
-        gameLogic.reset();
-        updateBoard();
-        setFocusable(true);
-        addKeyListener(new SlideListener());
+        if(oldCells == null) {
+            gameLogic.reset();
+        } else {
+            gameLogic.setValues(oldCells);
+        }
 
-        //Setup for stuff from GUI1024
-        this.changeWinValue = changeWin;
-        this.reset = reset;
-        this.quit = quit;
-        this.changeWinValue.addActionListener(new OptionsListener());
-        this.reset.addActionListener(new OptionsListener());
-        this.quit.addActionListener(new OptionsListener());
+        updateBoard();
     }
 
     private void updateBoard() {
@@ -124,22 +142,22 @@ public class GUI1024Panel2 extends JPanel {
                     b =(int)(Math.random()*256);
                 }
 
-                //This averages each random value with 30 to ensure
-                //the values are darker and easy to see
-                r = (r + 30)/2;
-                g = (g + 30)/2;
-                b = (b + 30)/2;
+                //This averages each random value with 100 to ensure
+                //the values are easy to see
+                //r = (r + 100)/2;
+                //g = (g + 100)/2;
+                //b = (b + 100)/2;
 
                 //Try to find a color in a new gray region, gives up
-                //after 10 tries at the most
+                //after 4 tries at the most
                 boolean goodEnough;
-                for(int j=0; i<10; i++) {
+                for(int j=0; i<4; i++) {
                     goodEnough = true;
 
                     for(Color color : colors) {
                         //Check if the average rgb value is similar to one that already exists
                         if(Math.abs((color.getRed() + color.getBlue()
-                                + color.getGreen()/3) - ((r+g+b)/3)) < 20) {
+                                + color.getGreen()/3) - ((r+g+b)/3)) < 50) {
                             goodEnough = false;
                         }
                     }
@@ -158,6 +176,41 @@ public class GUI1024Panel2 extends JPanel {
         return colors.get(colorNumber-1);
     }
 
+    public void resetBoardWithInput(boolean changeWinValue) {
+        int rows, cols, winNum;
+        try {
+            rows = Integer.parseInt(JOptionPane.showInputDialog(null, "Desired Number of rows"));
+            if(rows < 1) {
+                throw new IllegalArgumentException();
+            }
+        } catch(Exception e) {
+            rows = 4;
+        }
+
+        try {
+            cols = Integer.parseInt(JOptionPane.showInputDialog(null, "Desired Number of columns"));
+            if(cols < 1) {
+                throw new IllegalArgumentException();
+            }
+        } catch(Exception e) {
+            cols = 4;
+        }
+
+        if(changeWinValue) {
+            try {
+                winNum = Integer.parseInt(JOptionPane.showInputDialog(null, "Desired Winning Value"));
+                gameLogic.setWinningValue(winNum);
+            } catch(Exception e) {
+                winNum = 16;
+            }
+        } else {
+            winNum = gameLogic.getWinningValue();
+        }
+
+
+        resetBoard(rows, cols, winNum, true);
+
+    }
 
     private class SlideListener implements KeyListener, ActionListener {
         @Override
@@ -198,6 +251,7 @@ public class GUI1024Panel2 extends JPanel {
                             JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (resp == JOptionPane.YES_OPTION) {
                         gameLogic.reset();
+                        colors = new ArrayList<>();
                         updateBoard();
                     } else {
                         System.exit(0);
@@ -240,6 +294,8 @@ public class GUI1024Panel2 extends JPanel {
                 updateBoard();
             } else if(e.getSource() == quit) {
                 System.exit(1);
+            } else if(e.getSource() == resizeBoardButton) {
+                resetBoardWithInput(false);
             } else {
                 //TODO probably don't need anything here but idk
             }

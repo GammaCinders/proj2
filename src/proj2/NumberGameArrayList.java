@@ -110,12 +110,15 @@ public class NumberGameArrayList implements NumberSlider {
      * ArrayList of cells. Any grid value not covered by a cell
      * becomes a 0 (empty cell). Can use getNonEmptyTiles
      * to temporarily save a board and then load back with this method.
+     * Cuts out any cells not in bounds
      * @param ref The cell ArrayList with values to set the board to
      *****************************************************************/
     public void setValues(ArrayList<Cell> ref) {
         this.grid = new int[rows][columns];
         for(Cell cell : ref) {
-            grid[cell.getRow()][cell.getColumn()] = cell.getValue();
+            if(cell.getRow() < rows && cell.getColumn() < columns) {
+                grid[cell.getRow()][cell.getColumn()] = cell.getValue();
+            }
         }
     }
 
@@ -265,9 +268,7 @@ public class NumberGameArrayList implements NumberSlider {
         if(allMoves.size() > 1) {
             this.allMoves.remove(allMoves.size()-1);
             this.grid = new int[rows][columns];
-            for(Cell cell : ((ArrayList<Cell>)allMoves.get(allMoves.size()-1))) {
-                this.grid[cell.getRow()][cell.getColumn()] = cell.getValue();
-            }
+            setValues(((ArrayList<Cell>)allMoves.get(allMoves.size()-1)));
         } else {
             throw new IllegalStateException();
         }
@@ -481,6 +482,12 @@ public class NumberGameArrayList implements NumberSlider {
         gameStatus = GameStatus.IN_PROGRESS;
     }
 
-
+    /******************************************************************
+     * Gives the current winning value
+     * @return int current winning value
+     *****************************************************************/
+    public int getWinningValue() {
+        return this.winningValue;
+    }
 
 }

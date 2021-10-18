@@ -3,9 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="faa1f289-5e45-46aa-91e0-a4ad2e610fdd" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2$OptionsListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2$OptionsListener.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2$SlideListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2$SlideListener.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/GUI1024Panel2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/proj2/proj2/NumberGameArrayList.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/proj2/proj2/NumberGameArrayList.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/proj2/GUI1024.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/GUI1024.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/proj2/GUI1024Panel2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/GUI1024Panel2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/proj2/NumberGameArrayList.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/proj2/NumberGameArrayList.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,11 +170,6 @@
           <url>file://$PROJECT_DIR$/src/proj2/TenTwentyFourTester.java</url>
           <line>550</line>
           <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/proj2/TextUI.java</url>
-          <line>42</line>
-          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
