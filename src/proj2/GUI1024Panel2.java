@@ -96,10 +96,14 @@ public class GUI1024Panel2 extends JPanel {
             return;
         }
         for (Cell c : out) {
-            JLabel z = gameBoardUI[c.row][c.column];
-            z.setText(String.valueOf(Math.abs(c.value)));
-            z.setForeground(c.value > 0 ? Color.BLACK : Color.RED);
-            z.setBorder(BorderFactory.createLineBorder(generateColor(c.getValue()), borderThickness));
+            if(c.getRow() < gameBoardUI[0].length && c.getColumn() < gameBoardUI.length) {
+                JLabel z = gameBoardUI[c.row][c.column];
+                z.setText(String.valueOf(Math.abs(c.value)));
+                z.setForeground(c.value > 0 ? Color.BLACK : Color.RED);
+                z.setBorder(BorderFactory.createLineBorder(generateColor(c.getValue()), borderThickness));
+            } else {
+                //TODO nothing here rn
+            }
         }
     }
 
