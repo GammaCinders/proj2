@@ -120,6 +120,12 @@ public class NumberGameArrayList implements NumberSlider {
                 grid[cell.getRow()][cell.getColumn()] = cell.getValue();
             }
         }
+        saveBoard();
+        if(isGameLost()) {
+            gameStatus = GameStatus.USER_LOST;
+        } else {
+            this.gameStatus = GameStatus.IN_PROGRESS;
+        }
     }
 
     /******************************************************************
