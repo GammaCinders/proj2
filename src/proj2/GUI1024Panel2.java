@@ -96,7 +96,7 @@ public class GUI1024Panel2 extends JPanel {
             return;
         }
         for (Cell c : out) {
-            if(c.getRow() < gameBoardUI[0].length && c.getColumn() < gameBoardUI.length) {
+            if(c.getRow() < gameBoardUI.length && c.getColumn() < gameBoardUI[0].length) {
                 JLabel z = gameBoardUI[c.row][c.column];
                 z.setText(String.valueOf(Math.abs(c.value)));
                 z.setForeground(c.value > 0 ? Color.BLACK : Color.RED);
