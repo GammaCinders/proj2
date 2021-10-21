@@ -1,6 +1,7 @@
 package proj2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**********************************************************************
  * Computes all the logic of the 1024 game. Contains a 2d array
@@ -97,6 +98,7 @@ public class NumberGameArrayList implements NumberSlider {
                 }
             }
         }
+
         saveBoard();
         if(isGameLost()) {
             gameStatus = GameStatus.USER_LOST;

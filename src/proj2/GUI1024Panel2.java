@@ -95,6 +95,7 @@ public class GUI1024Panel2 extends JPanel {
             JOptionPane.showMessageDialog(null, "Incomplete implementation getNonEmptyTiles()");
             return;
         }
+
         for (Cell c : out) {
             if(c.getRow() < gameBoardUI.length && c.getColumn() < gameBoardUI[0].length) {
                 JLabel z = gameBoardUI[c.row][c.column];
@@ -183,7 +184,8 @@ public class GUI1024Panel2 extends JPanel {
     public void resetBoardWithInput(boolean changeWinValue) {
         int rows, cols, winNum;
         try {
-            rows = Integer.parseInt(JOptionPane.showInputDialog(null, "Desired Number of rows"));
+            rows = Integer.parseInt(JOptionPane.showInputDialog(null,
+                    "Desired Number of rows.\nWARNING: Reducing rows will reset board"));
             if(rows < 1) {
                 throw new IllegalArgumentException();
             }
@@ -192,7 +194,8 @@ public class GUI1024Panel2 extends JPanel {
         }
 
         try {
-            cols = Integer.parseInt(JOptionPane.showInputDialog(null, "Desired Number of columns"));
+            cols = Integer.parseInt(JOptionPane.showInputDialog(null,
+                    "Desired Number of columns.\nWARNING: Reducing columns will reset board"));
             if(cols < 1) {
                 throw new IllegalArgumentException();
             }
@@ -212,8 +215,11 @@ public class GUI1024Panel2 extends JPanel {
         }
 
 
-        resetBoard(rows, cols, winNum, true);
-
+        if(rows < gameLogic.getRows() || cols < gameLogic.getColumns()) {
+            resetBoard(rows, cols, winNum, false);
+        } else {
+            resetBoard(rows, cols, winNum, true);
+        }
     }
 
     private class SlideListener implements KeyListener, ActionListener {
