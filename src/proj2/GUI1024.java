@@ -1,10 +1,6 @@
 package proj2;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 public class GUI1024 {
     public static void main(String arg[]){
@@ -34,7 +30,7 @@ public class GUI1024 {
         panel.setFocusable(true);
         gui.getContentPane().add(panel);
 
-        panel.resetBoardWithInput(true);
+        panel.resetBoardWithInput(true, false);
 
         gui.setSize(panel.getSize());
         gui.setJMenuBar(topBar);

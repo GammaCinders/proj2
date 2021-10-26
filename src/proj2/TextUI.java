@@ -21,7 +21,7 @@ public class TextUI {
             System.err.println ("*---------------------------------------------*");
             System.exit(0xE0);
         }
-        game.resizeBoard(4, 4, 64);
+        game.resizeBoard(4, 4, 16);
         grid = new int[4][4];
 
         /* Set the string to %4d */
@@ -94,6 +94,20 @@ public class TextUI {
                     game.undo();
                     break;
             }
+
+            switch(game.getStatus()) {
+                case USER_LOST:
+                    renderBoard();
+                    System.out.println("You Lost! Resetting Board...");
+                    game.reset();
+                    break;
+                case USER_WON:
+                    renderBoard();
+                    System.out.println("You WON! Resetting Board...");
+                    game.reset();
+                    break;
+            }
+
             renderBoard();
             //key = ' ';
         }

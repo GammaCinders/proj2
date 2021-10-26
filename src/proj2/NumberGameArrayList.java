@@ -1,5 +1,6 @@
 package proj2;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -28,7 +29,7 @@ public class NumberGameArrayList implements NumberSlider {
      *  in order when save() is called so that they can be loaded
      *  back later in undo()
      */
-    private ArrayList<ArrayList> allMoves = new ArrayList<>();
+    private ArrayList<ArrayList<Cell>> allMoves = new ArrayList<>();
 
     /******************************************************************
      * A default constructor that initializes the board with height 4,
@@ -63,6 +64,7 @@ public class NumberGameArrayList implements NumberSlider {
             this.rows = height;
             this.columns = width;
             this.grid = new int[this.rows][this.columns];
+            //this.allMoves = new ArrayList<>();
             this.gameStatus = GameStatus.IN_PROGRESS;
         } else {
             throw new IllegalArgumentException();
@@ -100,11 +102,7 @@ public class NumberGameArrayList implements NumberSlider {
         }
 
         saveBoard();
-        if(isGameLost()) {
-            gameStatus = GameStatus.USER_LOST;
-        } else {
-            this.gameStatus = GameStatus.IN_PROGRESS;
-        }
+        updateGameStatus();
     }
 
     /******************************************************************
@@ -122,12 +120,8 @@ public class NumberGameArrayList implements NumberSlider {
                 grid[cell.getRow()][cell.getColumn()] = cell.getValue();
             }
         }
-        saveBoard();
-        if(isGameLost()) {
-            gameStatus = GameStatus.USER_LOST;
-        } else {
-            this.gameStatus = GameStatus.IN_PROGRESS;
-        }
+
+        updateGameStatus();
     }
 
     /******************************************************************
@@ -219,13 +213,11 @@ public class NumberGameArrayList implements NumberSlider {
         }
 
         //Check for if anything changed, to see to add one randcell after or not
-        for(Cell cell : ((ArrayList<Cell>)allMoves.get(allMoves.size()-1))) {
+        for(Cell cell : getLastMove()) {
             if(grid[cell.getRow()][cell.getColumn()] != cell.getValue()) {
                 placeRandomValue();
                 saveBoard();
-                if(isGameLost()) {
-                    gameStatus = GameStatus.USER_LOST;
-                }
+                updateGameStatus();
                 return true;
             }
         }
@@ -275,8 +267,7 @@ public class NumberGameArrayList implements NumberSlider {
     public void undo() {
         if(allMoves.size() > 1) {
             this.allMoves.remove(allMoves.size()-1);
-            this.grid = new int[rows][columns];
-            setValues(((ArrayList<Cell>)allMoves.get(allMoves.size()-1)));
+            setValues(getLastMove());
         } else {
             throw new IllegalStateException();
         }
@@ -352,9 +343,6 @@ public class NumberGameArrayList implements NumberSlider {
                 if(cells.get(i).getValue() == cells.get(i-1).getValue()) {
                     cells.remove(i);
                     cells.get(i-1).setValue(cells.get(i-1).getValue()*2);
-                    if(cells.get(i-1).getValue() == winningValue) {
-                        gameStatus = GameStatus.USER_WON;
-                    }
                     i--;
                 }
             }
@@ -363,9 +351,6 @@ public class NumberGameArrayList implements NumberSlider {
                 if(cells.get(i).getValue() == cells.get(i+1).getValue()) {
                     cells.remove(i);
                     cells.get(i).setValue(cells.get(i).getValue()*2);
-                    if(cells.get(i).getValue() == winningValue) {
-                        gameStatus = GameStatus.USER_WON;
-                    }
                 }
             }
         }
@@ -404,32 +389,61 @@ public class NumberGameArrayList implements NumberSlider {
 
     }
 
+
     /******************************************************************
-     * Checks to see if the game has been lost
-     * @return bool true if the board is full and there are no more
-     * valid moves, false otherwise
+     * Checks to see if the game has been lost or won, sets status to
+     * in progress if neither is true;
      *****************************************************************/
-    private boolean isGameLost() {
-        if(grid.length*grid[0].length == allMoves.get(allMoves.size()-1).size()) {
-            for(int row=0; row<rows; row++) {
-                ArrayList<Cell> cellRow = convertGridRowToCellArrayList(row);
-                if(cellRow.size() != mergeCells(cellRow, SlideDirection.RIGHT).size()) {
-                    return false;
-                }
-            }
+    private void updateGameStatus() {
+        boolean won = false;
+        boolean lost = true;
 
-            for(int col=0; col<columns; col++) {
-                ArrayList<Cell> cellRow = convertGridColToCellArrayList(col);
-                //TODO IDK if this works
-                if(cellRow.size() != mergeCells(cellRow, SlideDirection.RIGHT).size()) {
-                    return false;
-                }
+        //Here checking for if the player won
+        for(Cell cell : getNonEmptyTiles()) {
+            if(cell.getValue() >= winningValue) {
+                gameStatus = GameStatus.USER_WON;
+                won = true;
+                lost = false;
             }
-
-            return true;
         }
 
-        return false;
+        //here checking for if the player lost
+        if(!won) {
+            if(grid.length*grid[0].length == getLastMove().size()) {
+                for(int row=0; row<rows; row++) {
+                    ArrayList<Cell> cellRow =
+                            convertGridRowToCellArrayList(row);
+                    if(cellRow.size() !=
+                            mergeCells(cellRow, SlideDirection.RIGHT).size()) {
+                        lost = false;
+                        break;
+                    }
+                }
+
+                for(int col=0; col<columns; col++) {
+                    if(!lost) {break;}
+                    ArrayList<Cell> cellRow = convertGridColToCellArrayList(col);
+                    if(cellRow.size() != mergeCells(
+                            cellRow, SlideDirection.RIGHT).size()) {
+                        lost = false;
+                    }
+                }
+
+            } else {
+                lost = false;
+            }
+        }
+
+
+        if(won) {
+            gameStatus = GameStatus.USER_WON;
+        } else if(lost) {
+            gameStatus = GameStatus.USER_LOST;
+        } else {
+            //if neither, the game is in progress
+            gameStatus = GameStatus.IN_PROGRESS;
+        }
+
     }
 
     /******************************************************************
@@ -440,7 +454,7 @@ public class NumberGameArrayList implements NumberSlider {
      * @return bool true if n is both > 2 and a power of 2, false
      * otherwise
      *****************************************************************/
-    private boolean validPowerOf2(int n) {
+    static boolean validPowerOf2(int n) {
         double pow = n;
         if(pow % 2 == 1 || pow <= 2) {
             return false;
@@ -479,7 +493,7 @@ public class NumberGameArrayList implements NumberSlider {
      *                                  valid power of 2 (and > 0)
      *****************************************************************/
     public void setWinningValue(int newWinValue) {
-        if(validPowerOf2(newWinValue)) {
+        if(NumberGameArrayList.validPowerOf2(newWinValue)) {
             this.winningValue = newWinValue;
         } else {
             throw new IllegalArgumentException();
@@ -496,6 +510,37 @@ public class NumberGameArrayList implements NumberSlider {
      *****************************************************************/
     public int getWinningValue() {
         return this.winningValue;
+    }
+
+    /******************************************************************
+     * Gives the current board history of all moves
+     * @return board history of all moves
+     *****************************************************************/
+    public ArrayList<ArrayList<Cell>> getAllMoves() {
+        return allMoves;
+    }
+
+    /******************************************************************
+     * returns the last index of allMoves.
+     * @return last index of allMoves
+     *****************************************************************/
+    public ArrayList<Cell> getLastMove() {
+        return allMoves.get(allMoves.size()-1);
+    }
+
+    /******************************************************************
+     * sets the history (allMoves) to the passed arg
+     * @param allMoves arraylist of moves to set the board
+     *                 history to
+     * @throws IllegalArgumentException if arg is null
+     *****************************************************************/
+    public void setAllMoves(ArrayList<ArrayList<Cell>> allMoves) {
+        if(allMoves != null) {
+            this.allMoves = allMoves;
+            setValues(allMoves.get(allMoves.size()-1));
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
 
 }
