@@ -1,8 +1,7 @@
 package proj2;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**********************************************************************
  * Computes all the logic of the 1024 game. Contains a 2d array
@@ -30,6 +29,18 @@ public class NumberGameArrayList implements NumberSlider {
      *  back later in undo()
      */
     private ArrayList<ArrayList<Cell>> allMoves = new ArrayList<>();
+
+    /**A static var to hold the highest cell score achieved
+     * updates automatically*/
+    public static int highScore = 2;
+
+    /**A static var to hold number of games played in current session
+     * Should call addOneGamePlayed() from gui for consistency*/
+    public static int numberOfGamesPlayed = 0;
+
+    /**The number of slides on just this current game instance
+     * (meaning it resets when the game does with reset())*/
+    private int numberOfSlides = 0;
 
     /******************************************************************
      * A default constructor that initializes the board with height 4,
@@ -83,6 +94,7 @@ public class NumberGameArrayList implements NumberSlider {
         placeRandomValue();
         this.allMoves = new ArrayList<>();
         saveBoard();
+        this.numberOfSlides = 0;
     }
 
     /******************************************************************
@@ -140,12 +152,15 @@ public class NumberGameArrayList implements NumberSlider {
             newRandCell.setRow((int)(Math.random()*(this.rows)));
             newRandCell.setValue(2);
 
-            while(grid[newRandCell.getRow()][newRandCell.getColumn()] != 0) {
-                newRandCell.setColumn((int)(Math.random()*(this.columns)));
+            while(grid[newRandCell.getRow()][newRandCell.getColumn()]
+                    != 0) {
+                newRandCell.setColumn(
+                        (int)(Math.random()*(this.columns)));
                 newRandCell.setRow((int)(Math.random()*(this.rows)));
             }
 
-            this.grid[newRandCell.getRow()][newRandCell.getColumn()] = newRandCell.getValue();
+            this.grid[newRandCell.getRow()][newRandCell.getColumn()]
+                    = newRandCell.getValue();
             return newRandCell;
         }
     }
@@ -164,19 +179,23 @@ public class NumberGameArrayList implements NumberSlider {
 
         if(dir == SlideDirection.RIGHT) {
             for(int row=0; row<grid.length; row++) {
-                ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
+                ArrayList<Cell> cellsInRow =
+                        convertGridRowToCellArrayList(row);
                 mergeCells(cellsInRow, SlideDirection.RIGHT);
 
                 //Wipes the row and adds the new shifted row back in
                 wipeRow(row);
 
                 for(int i=0; i<cellsInRow.size(); i++) {
-                    grid[row][grid[row].length-i-1] = cellsInRow.get(cellsInRow.size()-i-1).getValue();
+                    grid[row][grid[row].length-i-1]
+                              = cellsInRow.get(cellsInRow.size()-i-1)
+                                .getValue();
                 }
             }
         } else if(dir == SlideDirection.LEFT) {
             for(int row=0; row<grid.length; row++) {
-                ArrayList<Cell> cellsInRow = convertGridRowToCellArrayList(row);
+                ArrayList<Cell> cellsInRow =
+                        convertGridRowToCellArrayList(row);
                 mergeCells(cellsInRow, SlideDirection.LEFT);
 
                 //Wipe current row before adding back merged array
@@ -188,7 +207,8 @@ public class NumberGameArrayList implements NumberSlider {
             }
         } else if(dir == SlideDirection.UP) {
             for(int col=0; col<grid[0].length; col++) {
-                ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
+                ArrayList<Cell> cellsInCol =
+                        convertGridColToCellArrayList(col);
                 mergeCells(cellsInCol, SlideDirection.UP);
 
                 //Wipe column before adding back merged array
@@ -200,24 +220,30 @@ public class NumberGameArrayList implements NumberSlider {
             }
         } else if(dir == SlideDirection.DOWN) {
             for(int col=0; col<grid[0].length; col++) {
-                ArrayList<Cell> cellsInCol = convertGridColToCellArrayList(col);
+                ArrayList<Cell> cellsInCol =
+                        convertGridColToCellArrayList(col);
                 mergeCells(cellsInCol, SlideDirection.DOWN);
 
                 //wipe this shit m8
                 wipeCol(col);
 
                 for(int i=0; i<cellsInCol.size(); i++) {
-                    grid[grid.length-i-1][col] = cellsInCol.get(cellsInCol.size()-i-1).getValue();
+                    grid[grid.length-i-1][col] =
+                            cellsInCol.get(cellsInCol.size()-i-1)
+                            .getValue();
                 }
             }
         }
 
-        //Check for if anything changed, to see to add one randcell after or not
+        //Check if anything changed, add one randcell if yes
         for(Cell cell : getLastMove()) {
             if(grid[cell.getRow()][cell.getColumn()] != cell.getValue()) {
                 placeRandomValue();
                 saveBoard();
                 updateGameStatus();
+                highScore = Math.max(getHighestCurrentValue(),
+                        highScore);
+                this.numberOfSlides++;
                 return true;
             }
         }
@@ -257,11 +283,12 @@ public class NumberGameArrayList implements NumberSlider {
     }
 
     /******************************************************************
-     * Undo the most recent action, i.e. restore the board to its previous
-     * state. Calling this method multiple times will ultimately restore
-     * the game to the very first initial state of the board holding two
-     * random values. Further attempt to undo beyond this state will throw
-     * an IllegalStateException.
+     * Undo the most recent action, i.e. restore the board to its
+     * previous state. Calling this method multiple times will
+     * ultimately restore the game to the very first initial state of
+     * the board holding two random values. Further attempt to undo
+     * beyond this state will throw an IllegalStateException.
+     * @throws IllegalStateException if there are no more moves to undo
      *****************************************************************/
     @Override
     public void undo() {
@@ -327,8 +354,8 @@ public class NumberGameArrayList implements NumberSlider {
     }
 
     /******************************************************************
-     * Mutates/Merges an ArrayList of cells based on the slide direction, used
-     * for each row or col of slide()
+     * Mutates/Merges an ArrayList of cells based on the slide
+     * direction, used for each row or col of slide()
      * @param cells ArrayList of cells to merge
      * @param dir board direction to merge the cells
      * @return ArrayList of merged cells, which still has the same
@@ -337,20 +364,25 @@ public class NumberGameArrayList implements NumberSlider {
      *****************************************************************/
     private ArrayList<Cell> mergeCells(ArrayList<Cell> cells,
                                        SlideDirection dir) {
-        if(dir == SlideDirection.RIGHT || dir == SlideDirection.DOWN) {
-            //goes right to left for merging, goes to 1 because that checks 0
+        if(dir == SlideDirection.RIGHT
+                || dir == SlideDirection.DOWN) {
             for(int i=cells.size()-1; i>0; i--) {
-                if(cells.get(i).getValue() == cells.get(i-1).getValue()) {
+                if(cells.get(i).getValue() ==
+                        cells.get(i-1).getValue()) {
                     cells.remove(i);
-                    cells.get(i-1).setValue(cells.get(i-1).getValue()*2);
+                    cells.get(i-1).setValue(
+                            cells.get(i-1).getValue()*2);
                     i--;
                 }
             }
-        } else if (dir == SlideDirection.LEFT || dir == SlideDirection.UP) {
+        } else if (dir == SlideDirection.LEFT
+                || dir == SlideDirection.UP) {
             for(int i=0; i<cells.size()-1; i++) {
-                if(cells.get(i).getValue() == cells.get(i+1).getValue()) {
+                if(cells.get(i).getValue() ==
+                        cells.get(i+1).getValue()) {
                     cells.remove(i);
-                    cells.get(i).setValue(cells.get(i).getValue()*2);
+                    cells.get(i).setValue(
+                            cells.get(i).getValue()*2);
                 }
             }
         }
@@ -413,8 +445,8 @@ public class NumberGameArrayList implements NumberSlider {
                 for(int row=0; row<rows; row++) {
                     ArrayList<Cell> cellRow =
                             convertGridRowToCellArrayList(row);
-                    if(cellRow.size() !=
-                            mergeCells(cellRow, SlideDirection.RIGHT).size()) {
+                    if(cellRow.size() != mergeCells(cellRow,
+                            SlideDirection.RIGHT).size()) {
                         lost = false;
                         break;
                     }
@@ -422,9 +454,10 @@ public class NumberGameArrayList implements NumberSlider {
 
                 for(int col=0; col<columns; col++) {
                     if(!lost) {break;}
-                    ArrayList<Cell> cellRow = convertGridColToCellArrayList(col);
-                    if(cellRow.size() != mergeCells(
-                            cellRow, SlideDirection.RIGHT).size()) {
+                    ArrayList<Cell> cellRow =
+                            convertGridColToCellArrayList(col);
+                    if(cellRow.size() != mergeCells(cellRow,
+                            SlideDirection.RIGHT).size()) {
                         lost = false;
                     }
                 }
@@ -541,6 +574,42 @@ public class NumberGameArrayList implements NumberSlider {
         } else {
             throw new IllegalArgumentException();
         }
+    }
+
+    /******************************************************************
+     * Returns the current highest value on the board
+     * @return the current highest value on the board
+     *****************************************************************/
+    private int getHighestCurrentValue() {
+
+        //I doubt this is efficient at all, but I'm just trying to get
+        //used to using lambdas
+        ArrayList<Cell> sorted = new ArrayList<>(getNonEmptyTiles()
+                .parallelStream()
+                .sorted((c1, c2) -> c2.getValue() - c1.getValue())
+                .collect(Collectors.toList()));
+
+        return sorted.get(0).getValue();
+    }
+
+    /******************************************************************
+     * Returns the highest score (the highest value of any cell) in any
+     * game played in the current user session
+     * @return int value of the highest score from any game
+     *****************************************************************/
+    public static int getHighScore() {
+        return NumberGameArrayList.highScore;
+    }
+
+    /******************************************************************
+     * Adds one to the static numberOfGamesPlayed. It works this way
+     * because when actually playing the game, not every reset() is
+     * one game played, such as the initial reset call, so this is
+     * more consistent for the GUI to call when it knows a game has
+     * been played
+     *****************************************************************/
+    public void addOneGamePlayed() {
+        numberOfGamesPlayed++;
     }
 
 }

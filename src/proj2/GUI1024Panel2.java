@@ -23,6 +23,8 @@ public class GUI1024Panel2 extends JPanel {
     /**Watch me do some swaggy shit with this*/
     private ArrayList<Color> colors = new ArrayList<>();
 
+    private static int highScore = 2;
+
     public GUI1024Panel2(JMenuItem changeWin,
                          JMenuItem reset, JMenuItem quit,
                          JButton resizeBoardButton) {
